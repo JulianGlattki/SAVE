@@ -1,14 +1,15 @@
 html {
     width: 100%; 
     height: 100%; 
+    overflow: hidden; 
 }
 body {
     margin: 0; 
-    padding: 0; 
     width: 100%; 
     height: 100%; 
     background-color: #393939;
 }
+
 
 hr {
     height: 0.5%; 
@@ -26,13 +27,17 @@ input {
     border: 0;
 }
 
+p {
+    margin: 0; 
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   Header                                   */
 /* -------------------------------------------------------------------------- */
 .header {
     height: 10%; 
     width: 100%; 
-    background-color: yellow; 
+    background-color: #393939; 
     font-size: 0; 
 }
 
@@ -59,12 +64,15 @@ input {
     padding-left: 2.5%;
     padding-right: 2.5%;
     margin: 0 auto; 
+    z-index: 50; 
 }
 .algorithmDropdown{
     height: 100%;
     width: 100%;
     background-color: #212125;
-
+    position: relative; 
+    z-index: 50; 
+    display: inline-block; 
 }
 
 .algorithmDropdownTextContainer {
@@ -78,6 +86,7 @@ input {
     text-align: center; 
     font-size: 55px;
     color: #F3D516;
+    font-family: 'Glegoo', serif;
 }
 
 .algorithmDropdownTriangleContainer {
@@ -97,12 +106,40 @@ input {
     border-right: 50px solid transparent;
     border-top: 35px solid #F3D516;
 }
+
+.algorithmDropdownOptions {
+    display: none; 
+    position: absolute; 
+    width: 100%;  
+    max-height: 1000%;
+    overflow-y: scroll; 
+}
+
+.algorithmDropdownOptions a{
+    background-color: #212125; 
+    display: block; 
+    height: 100%; 
+    width: 99.8%; 
+    line-height: 97px;
+    text-align: center; 
+    font-size: 55px; 
+    text-decoration: none; 
+    color: #F3D516;
+    border: 1px solid black; 
+    font-family: 'Glegoo', serif;
+}
+
+.algorithmDropdown:hover .algorithmDropdownOptions {
+    display: block; 
+}
+
+
 /* -------------------------------------------------------------------------- */
 .information {
     display: inline-block; 
     height: 100%; 
     width: 17.5%; 
-    background-color: blue; 
+    background-color: 393939; 
 }
 
 /* -------------------------------------------------------------------------- */
@@ -114,10 +151,25 @@ input {
     font-size: 0;
 }
 
+/* ------------------------------ Array Display ----------------------------- */
 .arrayDisplay {
     height: 85%; 
     background-color: #393939; 
+    text-align: center; 
+
 }
+
+.arrayElement {
+    background-color: #F3D516; 
+    font-family: 'Glegoo', serif;
+    text-align: center; 
+    display: inline-block; 
+    margin-left: 5px; 
+    margin-right: 5px; 
+    font-size: 100px; /* if width < 50px text shall not be displayed*/
+}
+
+
 
 /* ------------------------------ Array Buttons ----------------------------- */
 .arrayOptions {
@@ -195,6 +247,7 @@ input {
     text-align: center;
     font-size: 1%;
     color: #F3D516;
+    font-family: 'Glegoo', serif;
     font-size: 38px;
     background-color: #212125;
     border: 0;
@@ -209,10 +262,71 @@ input {
 
 
 /* -------------------------------------------------------------------------- */
-/*                                   Footer                                   */
+/*                                   Bottom                                  */
 /* -------------------------------------------------------------------------- */
-.footer {
+.bottom {
     height: 34.5%; 
-    background-color: pink; 
+    background-color: #212125; 
     font-size: 0;
+}
+
+.bottomContent {
+    height: 100%; 
+    width: 98%; 
+    margin: 0 auto; 
+    border-style: solid;
+    border-width: 0 10.5px 10.5px 10.5px;  
+    border-color: black; 
+    background-color: #212125;
+}
+
+.bottomTextDisplay {
+    height: 69%;
+    width: 100%; 
+    background-color: #393939; 
+    border-style: solid; 
+    border-width: 0 0 10.5px 0; 
+    overflow: auto; 
+}
+
+.bottomTextDisplayInnerContainer {
+    height: 100%; 
+    width: 90%; 
+    font-size: 35px; 
+    padding: 2%; 
+    color: #F3D516; 
+    font-family: 'Glegoo', serif;
+
+}
+
+.bottomButtons {
+    height: 29%; 
+    width: 100%; 
+    background-color: #212125; 
+    border-style: solid; 
+    border-width: 0 0 10.5px 0; 
+}
+
+
+.buttonContainer {
+    display: inline-block; 
+    height: 100%; 
+    width: 33.3%;
+}
+
+.controlButton {
+    display: inline-block; 
+    padding: 0; 
+    border: none; 
+    height: 100%; 
+    width: 100%;
+    text-align: center; 
+    font-size: 70px; 
+    background-color: #393939;
+    font-family: 'Glegoo', serif;
+    color: #F3D516; 
+    outline: none; 
+}
+.controlButton:focus {
+    outline: none; 
 }
