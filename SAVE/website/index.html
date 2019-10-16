@@ -2,9 +2,14 @@
 <html>
     <head>
         <title>SAVE</title>
-        <link rel="stylesheet" href="stylesheet.css">
+        
         <link href="https://fonts.googleapis.com/css?family=Glegoo&display=swap" rel="stylesheet">
         <meta content-type="html/text" charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" media="all and (max-width: 767px)" href="mobile.css">
+        <link rel="stylesheet" media="all and (min-width: 768px)" href="desktop.css">
+
     </head>
     <body>
         <div class="header">
@@ -61,17 +66,17 @@
         <hr>
         <div class="mainContent">
             <div class="arrayDisplay">
-                <div id="arrEl2" class="arrayElement" style="height:45%;width: 150px;">2</div>
-                <div id="arrEl4" class="arrayElement" style="height:90%;width: 150px;">4</div>
+                <div id="arrEl2" class="arrayElement" style="height:45%;width: 50px;">2</div>
+                <div id="arrEl4" class="arrayElement" style="height:90%;width: 50px;">4</div>
 
             </div>
             <div class="arrayOptions">
                 <div class="arrayOptionsContent">
                     <div class="arraySizeSliderContainer">
-                        <input class="arraySizeSlider" type="range" value="2" min="2" max="500">
+                        <input class="arraySizeSlider" type="range" value="2" min="2" max="999" maxlength="3">
                     </div>
                     <div class="arraySizeInputContainer">
-                        <input class="arraySizeInput" type="text" value="2" min="2" max="500">
+                        <input class="arraySizeInput" type="text" value="2" min="2" max="999" maxlength="3">
                     </div>
 
                 </div>
@@ -102,7 +107,7 @@
                     <div class="buttonContainer">
                         <button class="controlButton">&#129092</button> 
                     </div>
-                    <div class="buttonContainer">
+                    <div class="buttonContainer buttonContainerInner">
                         <button class="controlButton">Sort</button> 
                     </div>
                     <div class="buttonContainer">

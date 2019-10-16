@@ -1,0 +1,391 @@
+html {
+    width: 100%; 
+    height: 100%; 
+
+    font-size : 16px; 
+
+    overflow: hidden; 
+}
+body {
+    margin: 0; 
+    width: 100%; 
+    height: 100%; 
+
+    background-color: #393939;
+}
+
+
+hr {
+    height: 0.5%; 
+    margin: 0; 
+    border: 0;
+
+    background-color: black; 
+}
+
+div {
+    vertical-align: top;
+}
+
+input {
+    padding: 0; 
+    border: 0;
+}
+
+p {
+    margin: 0; 
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Header                                   */
+/* -------------------------------------------------------------------------- */
+.header {
+    height: 10%; 
+    width: 100%; 
+
+    background-color: #393939; 
+
+    font-size: 0; 
+}
+
+.logo {
+    display: inline-block; 
+    height: 100%; 
+    width: 17.5%; 
+
+    background-color: #393939;
+}
+/* -------------------------------------------------------------------------- */
+.algorithmPicker {
+    display: inline-block; 
+    height: 100%; 
+    width: 65%; 
+
+    background-color: #393939; 
+
+    font-size: 0;
+}
+.algorithmPickerContent {
+    position: relative; 
+    top: 27.5%;
+    bottom: 27.5%;
+
+    height: 45%; 
+    width: 90%;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+    margin: 0 auto; 
+
+}
+.algorithmDropdown{
+    position: relative;
+
+    display: inline-block; 
+    height: 100%;
+    width: 100%;
+
+    background-color: #212125; 
+}
+
+.algorithmDropdownTextContainer {
+    display: inline-flex;
+    height: 100%; 
+    width: 80%; 
+    flex-direction: column;
+    justify-content: center;
+    
+    background-color: #212125;
+    color: #F3D516;
+
+    font-size: 1.4rem;
+    font-family: 'Glegoo', serif;
+    text-align: center; 
+}
+
+.algorithmDropdownTriangleContainer {
+    display: inline-flex;
+    height: 100%; 
+    width: 20%;
+    align-content: center; 
+    justify-content: center;
+    flex-direction: column;
+
+    background-color: #212125; 
+}
+
+.algorithmDropdownTriangle {
+    width: 0; 
+    height: 0; 
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 15px solid #F3D516;
+}
+
+.algorithmDropdownOptions {
+    position: absolute; 
+
+    display: none; 
+    width: 100%; 
+    max-height: 1050%;
+
+    overflow-y: scroll; 
+}
+
+.algorithmDropdownOptions a{
+    display: block; 
+    height: 100%;
+    width: 99.8%;
+    box-sizing: border-box;
+    border: 1px solid black; 
+     
+    color: #F3D516;
+    background-color: #212125;
+
+    font-size: 1.4rem;
+    font-family: 'Glegoo', serif;
+    text-align: center; 
+    text-decoration: none; 
+    line-height: 200%;  
+}
+
+.algorithmDropdown:hover .algorithmDropdownOptions {
+    display: block; 
+}
+
+
+/* -------------------------------------------------------------------------- */
+.information {
+    display: inline-block; 
+    height: 100%; 
+    width: 17.5%;
+    
+    background-color: #393939; 
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 Maincontent                                */
+/* -------------------------------------------------------------------------- */
+.mainContent {
+    height: 55%; 
+
+    background-color: #393939;
+
+    font-size: 0;
+}
+
+/* ------------------------------ Array Display ----------------------------- */
+.arrayDisplay {
+    height: 85%; 
+
+    background-color: #393939; 
+
+    text-align: center; 
+
+}
+
+.arrayElement {
+    display: inline-block; 
+    margin-left: 5px; 
+    margin-right: 5px; 
+
+    background-color: #F3D516; 
+
+    text-align: center; 
+    font-family: 'Glegoo', serif;
+    font-size: 25px; /* if width < 50px text shall not be displayed*/
+}
+
+
+
+/* ------------------------------ Array Buttons ----------------------------- */
+.arrayOptions {
+    height: 15%; 
+    width: 100%;
+
+    background-color: #393939; 
+
+}
+
+.arrayOptionsContent {
+    position: relative; 
+    top: 10%; 
+    bottom: 10%; 
+
+    height: 80%; 
+    width: 95%; 
+    padding-left: 2.5%; 
+    padding-right: 2.5%; 
+}
+/* -------------------------------------------------------------------------- */
+.arraySizeSliderContainer {
+    display: inline-block; 
+    height: 100%; 
+    width: 75%; 
+}
+
+.arraySizeSlider {
+    position: relative; 
+    top: 35%;
+    bottom: 35%;
+
+    height: 30%;
+    width: 100%; 
+
+    appearance: none;
+    display: block; 
+    margin: 0 auto; 
+
+    background-color: #F3D516;
+
+    outline: none; 
+    -webkit-appearance: none; 
+}
+
+.arraySizeSlider::-webkit-slider-thumb {
+    height: 35px; 
+    width: 35px; 
+    
+    background: #212125;
+
+    cursor: pointer; 
+    -webkit-appearance: none; 
+    appearance: none; 
+}
+
+.slider::-moz-range-thumb {
+    height: 35px;
+    width: 35px; 
+
+    background: #212125; 
+
+    cursor: pointer; 
+  }
+/* -------------------------------------------------------------------------- */
+.arraySizeInputContainer {
+    display: inline-block;
+    height: 100%;
+    width: 20%;   
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+}
+
+.arraySizeInput {
+    position: relative; 
+    top: 25%; 
+    bottom: 25%;
+
+    display: block;
+    height: 50%;
+    width: 95%;
+    border: 0;
+    margin: 0 auto;
+    
+    font-family: 'Glegoo', serif;
+    font-size: 25px;
+    text-align: center;
+
+    background-color: #212125;
+    color: #F3D516;
+}
+
+.arraySizeInput:focus {
+    outline: none; 
+}
+
+/* -------------------------------------------------------------------------- */
+
+
+
+/* -------------------------------------------------------------------------- */
+/*                                   Bottom                                  */
+/* -------------------------------------------------------------------------- */
+.bottom {
+    height: 34%; 
+    width: 100%; 
+    box-sizing: border-box;
+    border-style: solid; 
+    border-width: 0 4.2px 4.2px 4.2px;  
+    
+    background-color: #212125; 
+
+    font-size: 0;
+}
+
+.bottomContent {
+    height: 100%; 
+    width: 100%; 
+    margin: 0 auto; 
+    border-color: black; 
+
+    background-color: #212125;
+}
+
+.bottomTextDisplay {
+    height: 70%;
+    width: 100%; 
+    overflow: auto; 
+    box-sizing: border-box; 
+    padding: 0px;
+    padding-bottom: 10px;
+    border-style: solid; 
+    border-width: 0 0 4.2px 0;  
+
+    background-color: #393939;
+}
+
+.bottomTextDisplayInnerContainer {
+    height: 100%; 
+    width: 90%; 
+    padding: 2%; 
+
+    color: #F3D516; 
+
+    font-size: 1rem; 
+    font-family: 'Glegoo', serif;
+
+}
+
+.bottomButtons {
+    height: 30%; 
+    width: 100%; 
+    border-style: solid; 
+    border-width: 0; 
+
+    background-color: #212125; 
+}
+
+
+.buttonContainer {
+    display: inline-block; 
+    height: 100%; 
+    width: 32%;
+
+}
+
+.buttonContainerInner {
+    width: 36%;
+    box-sizing: border-box;
+    border-left: 4px solid black; 
+    border-right: 4px solid black;
+}
+.controlButton {
+    display: inline-block; 
+    height: 100%; 
+    width: 100%;
+    padding: 0; 
+    border: none;
+
+    background-color: #393939;
+    color: #F3D516;
+
+    text-align: center; 
+    font-size: 2.5rem; 
+    font-family: 'Glegoo', serif;
+     
+    outline: none;
+    
+}
+.controlButton:focus {
+    outline: none; 
+}
+
