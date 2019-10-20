@@ -71,7 +71,7 @@ p {
     bottom: 27.5%;
 
     height: 45%; 
-    width: 50%;
+    width: 90%;
     padding-left: 2.5%;
     padding-right: 2.5%;
     margin: 0 auto; 
@@ -83,7 +83,7 @@ p {
     display: inline-block; 
     height: 100%;
     width: 100%;
-
+    
     background-color: #212125; 
 }
 
@@ -100,15 +100,14 @@ p {
     font-size: 1.4rem;
     font-family: 'Glegoo', serif;
     text-align: center; 
+
+    overflow: auto;
 }
 
 .algorithmDropdownTriangleContainer {
-    position: relative;
-
     display: inline-flex;
     height: 100%; 
     width: 20%;
-
     align-content: center; 
     justify-content: center;
     flex-direction: column;
@@ -117,8 +116,6 @@ p {
 }
 
 .algorithmDropdownTriangle {
-    position: absolute;
-    right: 10%;
     width: 0; 
     height: 0; 
     border-left: 20px solid transparent;
@@ -136,7 +133,7 @@ p {
     overflow-y: scroll; 
 }
 
-.algorithmDropdownOptions a{
+.algorithmDropdownOptions p{
     display: block; 
     height: 100%;
     width: 99.8%;
@@ -190,14 +187,16 @@ p {
 
 .arrayElement {
     display: inline-block; 
-    margin-left: 5px; 
-    margin-right: 5px; 
+    margin-left: 1.5%; 
+    margin-right: 1.5%; 
 
     background-color: #F3D516; 
 
     text-align: center; 
     font-family: 'Glegoo', serif;
-    font-size: 25px; /* if width < 50px text shall not be displayed*/
+    font-size: 15px; /* if width < 50px text shall not be displayed*/
+
+    white-space: pre; 
 }
 
 
@@ -217,15 +216,15 @@ p {
     bottom: 10%; 
 
     height: 80%; 
-    width: 97%; 
-    padding-left: 1%; 
-    padding-right: 1%; 
+    width: 95%; 
+    padding-left: 2.5%; 
+    padding-right: 2.5%; 
 }
 /* -------------------------------------------------------------------------- */
 .arraySizeSliderContainer {
     display: inline-block; 
     height: 100%; 
-    width: 85%; 
+    width: 75%; 
 }
 
 .arraySizeSlider {
@@ -269,9 +268,9 @@ p {
 .arraySizeInputContainer {
     display: inline-block;
     height: 100%;
-    width: 12%;   
-    padding-left: 1%;
-    padding-right: 1%;
+    width: 20%;   
+    padding-left: 2.5%;
+    padding-right: 2.5%;
 }
 
 .arraySizeInput {
@@ -341,7 +340,7 @@ p {
 .bottomTextDisplayInnerContainer {
     height: 100%; 
     width: 90%; 
-    padding: 0.5%; 
+    padding: 2%; 
 
     color: #F3D516; 
 
@@ -393,23 +392,4 @@ p {
 .controlButton:focus {
     outline: none; 
 }
-
-/* -------------------------------------------------------------------------- */
-/*                                   Others                                   */
-/* -------------------------------------------------------------------------- */
-::-webkit-scrollbar {
-    width: 10px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #212125; 
-  }
-   
-  ::-webkit-scrollbar-thumb {
-    background: #F3D516; 
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #F3D516; 
-  }
 
