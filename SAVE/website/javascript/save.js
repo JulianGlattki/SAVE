@@ -63,26 +63,20 @@ function changeArraySize(e){
 }
 
 function generateNewArray(size) {
-    var arrayDisplay = document.getElementById("arrayDisplay");
-    var width = 90/(size+1);
-    var padding = width/(size*2);
+	var arrayDisplay = document.getElementById("arrayDisplay");
+    var width = 90/(Number(size)+1);
+    var margin = (width/Number(size))/2;
     for(var i = 0; i < size; i++) {
         var value = Math.floor((Math.random()*5000)+1);
         var height = calcHeight(value);
 
         arrayDisplay.insertAdjacentHTML("beforeEnd", 
-            "<div id='arrEl" + value + "' class='arrayElement' style='height:" + height + "%; width:" + width + "%;'>" + value +"</div>");
+            "<div id='arrEl" + value + "' class='arrayElement' style='height:" + height + "%; width:" + width + "%; " + "margin: 0 " + margin + "vw 0 "  + margin + "vw;'></div>");
     }
-
-    Array.from("document.getElementsByClassName('arrayElement')".forEach(function(item) {
-        item.setAttribute("padding", "0" + padding + "0" + padding);
-    }));
-
-
 }
 
 function calcHeight(height) {
-    return height * 0.0178 + 1; // Map height [1-5000] to [1-999]
+    return height * 0.0178 + 1; // Map height [1-5000] to [1-90]
 }
 function deleteArray() {
     var arrayElements = document.getElementsByClassName("arrayElement");

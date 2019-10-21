@@ -194,10 +194,6 @@ p {
     margin-right: 5px; 
 
     background-color: #F3D516; 
-
-    text-align: center; 
-    font-family: 'Glegoo', serif;
-    font-size: 25px; /* if width < 50px text shall not be displayed*/
 }
 
 

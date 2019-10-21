@@ -191,12 +191,6 @@ p {
     margin-right: 1.5%; 
 
     background-color: #F3D516; 
-
-    text-align: center; 
-    font-family: 'Glegoo', serif;
-    font-size: 15px; /* if width < 50px text shall not be displayed*/
-
-    white-space: pre; 
 }
 
 
