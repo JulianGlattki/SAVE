@@ -4,6 +4,10 @@ var currentArraySize = 2;
 function setUp() {
     document.getElementsByName(currentAlgorithm)[0].style.display = "none";
     initializeEventHandlers(); 
+    changeArraySize(2);
+    initAlgorithmDropdown();
+
+
 }
 function initializeEventHandlers() {
     setEventHandlersForDropdown(); 
@@ -19,27 +23,34 @@ function initializeEventHandlers() {
     document.getElementById("arraySizeSlider").addEventListener("input", (e) => {
         changeArraySize(e);
     });
-    /*document.getElementById("arraySizeSlider").addEventListener("change", (e) => {
+    document.getElementById("arraySizeSlider").addEventListener("change", (e) => {
         changeArraySize(e);
-    });*/
+    });
     document.getElementById("arraySizeInput").addEventListener("input", (e) => {
         changeArraySize(e);
     });
 }
 
 function setEventHandlersForDropdown() {
-    var algorithmDropdownOptions = document.getElementsByClassName("algorithmDropdownOptions");
+    var algorithmDropdownOption = document.getElementsByClassName("algorithmDropdownOption");
 
-    for(var i = 0; i < algorithmDropdownOptions.length; i++) {
-        algorithmDropdownOptions[i].addEventListener("click", (e) => {
+    for(var i = 0; i < algorithmDropdownOption.length; i++) {
+        algorithmDropdownOption[i].addEventListener("click", (e) => {
             algorithmPicked(e);
         });
     }
 }
 
+function initAlgorithmDropdown() {
+    var initAlgorithm = document.getElementsByClassName("algorithmDropdownOption")[0].attributes.getNamedItem("name").value;
+    var currentAlgorithm = initAlgorithm; 
+    algorithmPicked(currentAlgorithm);
+}
+
 function algorithmPicked(e) {
     var previousAlgorithm = currentAlgorithm;
-    currentAlgorithm = e.target.getAttribute("name");
+    if(typeof e === 'string') currentAlgorithm = e; 
+    else currentAlgorithm = e.target.getAttribute("name");
     document.getElementsByName(previousAlgorithm)[0].style.display = "block"; 
     document.getElementsByName(currentAlgorithm)[0].style.display = "none";
     document.getElementById("algorithmSelected").innerHTML = 
@@ -48,30 +59,35 @@ function algorithmPicked(e) {
 
 
 function changeArraySize(e){
-    if (e.target.id == "arraySizeSlider") {
-        currentArraySize = e.target.value; 
-        document.getElementById("arraySizeInput").value = currentArraySize ; 
-        deleteArray(); 
-        generateNewArray(currentArraySize);
+    if (!isNaN(e) && e > 1 && e < 100) {
+        currentArraySize = e; 
+        document.getElementById("arraySizeInput").value = e;
+        document.getElementById("arraySizeSlider").value = e;
+    } else {
+        if (e.target.id == "arraySizeSlider") {
+            currentArraySize = e.target.value; 
+            document.getElementById("arraySizeInput").value = currentArraySize ; 
+        }  else if (e.target.id == "arraySizeInput") {
+            currentArraySize = e.target.value; 
+            document.getElementById("arraySizeSlider").value = currentArraySize ;
+        }
+
     }
-    else if(e.target.id == "arraySizeInput") {
-        currentArraySize = e.target.value; 
-        document.getElementById("arraySizeSlider").value = currentArraySize ;
-        deleteArray(); 
-        generateNewArray(currentArraySize);
-    }
+
+    deleteArray(); 
+    generateNewArray(currentArraySize);
 }
 
 function generateNewArray(size) {
 	var arrayDisplay = document.getElementById("arrayDisplay");
     var width = 90/(Number(size)+1);
-    var margin = (width/Number(size))/2;
+
     for(var i = 0; i < size; i++) {
         var value = Math.floor((Math.random()*5000)+1);
         var height = calcHeight(value);
 
         arrayDisplay.insertAdjacentHTML("beforeEnd", 
-            "<div id='arrEl" + value + "' class='arrayElement' style='height:" + height + "%; width:" + width + "%; " + "margin: 0 " + margin + "vw 0 "  + margin + "vw;'></div>");
+            "<div id='arrEl" + value + "' class='arrayElement' style='height:" + height + "%; width:" + width + "%;'></div>");
     }
 }
 
