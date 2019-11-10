@@ -1,11 +1,11 @@
-var currentAlgorithm = "bubbleSort";
-var currentArraySize = 2; 
-
+/* -------------------------------------------------------------------------- */
+/*                               Init functions                               */
+/* -------------------------------------------------------------------------- */
 function setUp() {
-    document.getElementsByName(currentAlgorithm)[0].style.display = "none";
+    document.getElementsByName("Bubblesort")[0].style.display = "none";
     initializeEventHandlers(); 
     changeArraySize(2);
-    initAlgorithmDropdown();
+    initAlgorithmDropdown(); 
 
 
 }
@@ -43,46 +43,55 @@ function setEventHandlersForDropdown() {
 
 function initAlgorithmDropdown() {
     var initAlgorithm = document.getElementsByClassName("algorithmDropdownOption")[0].attributes.getNamedItem("name").value;
-    var currentAlgorithm = initAlgorithm; 
-    algorithmPicked(currentAlgorithm);
+    algorithmPicked(initAlgorithm);
 }
 
+/* -------------------------------------------------------------------------- */
+/*                             Dropdown functions                             */
+/* -------------------------------------------------------------------------- */
 function algorithmPicked(e) {
-    var previousAlgorithm = currentAlgorithm;
-    if(typeof e === 'string') currentAlgorithm = e; 
+    var previousAlgorithm = document.getElementById("algorithmSelected").innerHTML;
+    var currentAlgorithm; 
+
+    if (typeof e === 'string') currentAlgorithm = e; 
     else currentAlgorithm = e.target.getAttribute("name");
+
     document.getElementsByName(previousAlgorithm)[0].style.display = "block"; 
     document.getElementsByName(currentAlgorithm)[0].style.display = "none";
     document.getElementById("algorithmSelected").innerHTML = 
         document.getElementsByName(currentAlgorithm)[0].innerHTML; 
+
+    changeAlgorithmTextDisplay();
 }
 
-
+/* -------------------------------------------------------------------------- */
+/*                               Array functions                              */
+/* -------------------------------------------------------------------------- */
 function changeArraySize(e){
+    var arraySize;
     if (!isNaN(e) && e > 1 && e < 100) {
-        currentArraySize = e; 
+        arraySize = e; 
         document.getElementById("arraySizeInput").value = e;
         document.getElementById("arraySizeSlider").value = e;
     } else {
         if (e.target.id == "arraySizeSlider") {
-            currentArraySize = e.target.value; 
-            document.getElementById("arraySizeInput").value = currentArraySize ; 
+            arraySize = e.target.value; 
+            document.getElementById("arraySizeInput").value = arraySize ; 
         }  else if (e.target.id == "arraySizeInput") {
-            currentArraySize = e.target.value; 
-            document.getElementById("arraySizeSlider").value = currentArraySize ;
+            arraySize = e.target.value; 
+            document.getElementById("arraySizeSlider").value = arraySize ;
         }
 
     }
-
     deleteArray(); 
-    generateNewArray(currentArraySize);
+    generateNewArray(arraySize);
 }
 
 function generateNewArray(size) {
 	var arrayDisplay = document.getElementById("arrayDisplay");
     var width = 90/(Number(size)+1);
 
-    for(var i = 0; i < size; i++) {
+    for (var i = 0; i < size; i++) {
         var value = Math.floor((Math.random()*5000)+1);
         var height = calcHeight(value);
 
@@ -91,9 +100,6 @@ function generateNewArray(size) {
     }
 }
 
-function calcHeight(height) {
-    return height * 0.0178 + 1; // Map height [1-5000] to [1-90]
-}
 function deleteArray() {
     var arrayElements = document.getElementsByClassName("arrayElement");
 
@@ -101,6 +107,15 @@ function deleteArray() {
         arrayElements[0].parentNode.removeChild(arrayElements[0]);
     }
 }
+
+function swapArrayElements(elementId, anotherElementId) {
+    var element = document.getElementById(elementId);
+}
+/* --------------------------------- Helper --------------------------------- */
+function calcHeight(height) {
+    return height * 0.0178 + 1; // Map height [1-5000] to [1-90]
+}
+
 
 function stepBack() {
     console.log("stepBack");
@@ -115,3 +130,17 @@ function stepForward() {
     console.log("stepForward");
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                Text display                                */
+/* -------------------------------------------------------------------------- */
+
+function changeAlgorithmTextDisplay() {
+    var algorithm = document.getElementById("algorithmSelected").innerHTML;
+    var bottomTextDisplay = document.getElementById("bottomTextDisplay");
+
+    var linenumber = bottomTextDisplay.childNodes.length; 
+
+    bottomTextDisplay.insertAdjacentHTML("beforeEnd",
+    '<p id="line' + linenumber + '" class="bottomTextDisplayText">You picked ' + algorithm +  '. Ready to sort....</p>'
+    );
+}
