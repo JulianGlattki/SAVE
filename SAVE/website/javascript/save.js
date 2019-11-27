@@ -1,3 +1,5 @@
+var lastIndex; 
+
 /* -------------------------------------------------------------------------- */
 /*                               Init functions                               */
 /* -------------------------------------------------------------------------- */
@@ -32,7 +34,7 @@ function initializeEventHandlers() {
 }
 
 function setEventHandlersForDropdown() {
-    var algorithmDropdownOption = document.getElementsByClassName("algorithmDropdownOption");
+    let algorithmDropdownOption = document.getElementsByClassName("algorithmDropdownOption");
 
     for(var i = 0; i < algorithmDropdownOption.length; i++) {
         algorithmDropdownOption[i].addEventListener("click", (e) => {
@@ -94,9 +96,12 @@ function generateNewArray(size) {
     for (var i = 0; i < size; i++) {
         var value = Math.floor((Math.random()*5000)+1);
         var height = calcHeight(value);
-
+        if(document.getElementById('arrEl' + value) != null) {
+            i--; 
+            continue; 
+        }
         arrayDisplay.insertAdjacentHTML("beforeEnd", 
-            "<div id='arrEl" + value + "' class='arrayElement' style='height:" + height + "%; width:" + width + "%;'></div>");
+            "<div id='arrEl" + value + "' class='arrayElement' value='" + value + "' style='height:" + height + "%; width:" + width + "%;'></div>");
     }
 }
 
@@ -108,14 +113,16 @@ function deleteArray() {
     }
 }
 
-function swapArrayElements(elementId, anotherElementId) {
-    var element = document.getElementById(elementId);
-}
+
 /* --------------------------------- Helper --------------------------------- */
 function calcHeight(height) {
     return height * 0.0178 + 1; // Map height [1-5000] to [1-90]
 }
 
+
+/* -------------------------------------------------------------------------- */
+/*                            Sorting functionality                           */
+/* -------------------------------------------------------------------------- */
 
 function stepBack() {
     console.log("stepBack");
@@ -123,12 +130,58 @@ function stepBack() {
 }
 
 function sort() {
+    var array = getArray();
+    bubbleSort(0);
+   // swapArrayElements(array[0], array[1]);
     console.log("sort");
 }
 
 function stepForward() {
     console.log("stepForward");
 }
+
+function getArray() {
+    let array = [].slice.call(document.getElementsByClassName('arrayElement'));
+    return array.map(x => parseInt(x.getAttribute('value')));  
+}
+
+function isSorted(array) {
+    for(let i = 0; i < array.length-1; i++) {
+        if(array[i] > array[i+1]) return false; 
+    }
+    return true; 
+}
+
+function insertBeforeElement(elementValue, anotherElementValue) {
+    let element = document.getElementById('arrEl' + elementValue);
+    let anotherElement = document.getElementById('arrEl' + anotherElementValue);
+    element.parentNode.insertBefore(anotherElement, element);
+}
+
+
+/* ------------------------------- Bubble Sort ------------------------------ */
+
+function bubbleSort(fromIndex) {
+    var array = getArray(); 
+    while(!isSorted(array)) {
+        fromIndex = nextStepBubbleSort(array, fromIndex);
+        array = getArray(); 
+    }
+}
+function nextStepBubbleSort(array, lastIndex) {
+    if(!Array.isArray(array) || lastIndex < 0 || lastIndex >= array.length) {
+        console.log("Input parameters are invalid");
+        return; 
+    }
+    
+    if(array[lastIndex] > array[lastIndex + 1]) {
+        insertBeforeElement(array[lastIndex], array[lastIndex+1]);
+    }
+
+    if(lastIndex + 2 == array.length) lastIndex = -1;
+    return lastIndex+1;  
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                Text display                                */
