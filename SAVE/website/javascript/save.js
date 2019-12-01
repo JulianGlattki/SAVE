@@ -156,7 +156,16 @@ function insertBeforeElement(elementValue, anotherElementValue) {
     let element = document.getElementById('arrEl' + elementValue);
     let anotherElement = document.getElementById('arrEl' + anotherElementValue);
     element.parentNode.insertBefore(anotherElement, element);
+    /*let clone1 = element.cloneNode();
+    let clone2 = anotherElement.cloneNode();
+    anotherElement.replaceWith(clone1);
+    element.replaceWith(clone2);*/ 
+
 }
+
+
+
+
 
 
 /* ------------------------------- Bubble Sort ------------------------------ */
