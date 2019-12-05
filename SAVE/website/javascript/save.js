@@ -1,3 +1,5 @@
+"use strict";
+
 var lastIndex; 
 
 /* -------------------------------------------------------------------------- */
@@ -130,14 +132,20 @@ function stepBack() {
 }
 
 function sort() {
-    var array = getArray();
-    bubbleSort(0);
-   // swapArrayElements(array[0], array[1]);
     console.log("sort");
 }
 
 function stepForward() {
-    console.log("stepForward");
+    let array = getArray(); 
+
+    if(isSorted(array)) {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        let linenumber = bottomTextDisplay.childNodes.length; 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p id="line' + linenumber + '" class="bottomTextDisplayText">Array is sorted... Please reset to start sorting again.</p>');
+    } else {
+        stepForwardBubbleSort(array);
+    }
 }
 
 function getArray() {
@@ -156,10 +164,10 @@ function insertBeforeElement(elementValue, anotherElementValue) {
     let element = document.getElementById('arrEl' + elementValue);
     let anotherElement = document.getElementById('arrEl' + anotherElementValue);
     element.parentNode.insertBefore(anotherElement, element);
-    /*let clone1 = element.cloneNode();
+    let clone1 = element.cloneNode();
     let clone2 = anotherElement.cloneNode();
     anotherElement.replaceWith(clone1);
-    element.replaceWith(clone2);*/ 
+    element.replaceWith(clone2);
 
 }
 
@@ -169,26 +177,74 @@ function insertBeforeElement(elementValue, anotherElementValue) {
 
 
 /* ------------------------------- Bubble Sort ------------------------------ */
+// TODO reset everything if array size changes
 
-function bubbleSort(fromIndex) {
-    var array = getArray(); 
-    while(!isSorted(array)) {
-        fromIndex = nextStepBubbleSort(array, fromIndex);
-        array = getArray(); 
+var lastStepHolder; 
+
+class BubbleSortHolder {
+    constructor(array, lastIndex, firstElement, secondElement, swap) {
+        this.array = array; 
+        this.lastIndex = lastIndex; 
+        this.firstElement = firstElement;
+        this.secondElement = secondElement; 
+        this.swap = swap; 
     }
 }
+
+function stepForwardBubbleSort(array) {
+    if(!isSorted(array)) {
+
+        if(!lastStepHolder) {
+            lastStepHolder = new BubbleSortHolder(array, 0, -1, -1, false);
+        } else {
+            let prevElement = document.getElementById('arrEl' + lastStepHolder.firstElement);
+            let prevAnotherElement = document.getElementById('arrEl' + lastStepHolder.secondElement);
+        
+            prevElement.style.backgroundColor = '#F3D516';
+            prevAnotherElement.style.backgroundColor = '#F3D516';
+        }
+
+        lastStepHolder = nextStepBubbleSort(array, lastStepHolder.lastIndex);
+        console.log(lastStepHolder);
+        let element = document.getElementById('arrEl' + lastStepHolder.firstElement);
+        let anotherElement = document.getElementById('arrEl' + lastStepHolder.secondElement);
+        
+        if (lastStepHolder.swap) {
+
+            element.style.backgroundColor = 'coral';
+            anotherElement.style.backgroundColor = 'red';
+            element.parentNode.insertBefore(anotherElement, element);
+        }
+        else {
+            element.style.backgroundColor = 'blue';
+            anotherElement.style.backgroundColor = 'lightblue';
+        }
+    }   
+}
+function bubbleSort(fromIndex) {
+
+}
 function nextStepBubbleSort(array, lastIndex) {
-    if(!Array.isArray(array) || lastIndex < 0 || lastIndex >= array.length) {
+    if (!Array.isArray(array) || lastIndex < 0 || lastIndex >= array.length) {
         console.log("Input parameters are invalid");
         return; 
     }
-    
-    if(array[lastIndex] > array[lastIndex + 1]) {
-        insertBeforeElement(array[lastIndex], array[lastIndex+1]);
+
+    var swap = false; 
+    if (array[lastIndex] > array[lastIndex + 1]) {
+        var temp = array[lastIndex+1];
+        array[lastIndex+1] = array[lastIndex];
+        array[lastIndex] = temp; 
+        swap = true; 
     }
 
-    if(lastIndex + 2 == array.length) lastIndex = -1;
-    return lastIndex+1;  
+    let bubbleSortHolder = new BubbleSortHolder(array, lastIndex, array[lastIndex+1], 
+        array[lastIndex], swap);
+
+    bubbleSortHolder.lastIndex++;  
+    if(bubbleSortHolder.lastIndex + 1 == array.length) bubbleSortHolder.lastIndex = 0; 
+
+    return bubbleSortHolder;
 }
 
 
