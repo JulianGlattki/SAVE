@@ -50,6 +50,21 @@ function initAlgorithmDropdown() {
     algorithmPicked(initAlgorithm);
 }
 
+function deactivateControlButtons() {
+    let controlButtons = Array.from(document.getElementsByClassName('controlButton'));
+
+    controlButtons.forEach(function(button) {
+        button.disabled = true; 
+    });
+}
+
+function activateControlButtons() {
+    let controlButtons = Array.from(document.getElementsByClassName('controlButton'));
+
+    controlButtons.forEach(function(button) {
+        button.disabled = false; 
+    });
+}
 /* -------------------------------------------------------------------------- */
 /*                             Dropdown functions                             */
 /* -------------------------------------------------------------------------- */
@@ -92,7 +107,7 @@ function changeArraySize(e){
 }
 
 function generateNewArray(size) {
-	var arrayDisplay = document.getElementById("arrayDisplay");
+	var arrayDisplay = document.getElementById('arrayDisplay');
     var width = 90/(Number(size)+1);
 
     for (var i = 0; i < size; i++) {
@@ -102,19 +117,142 @@ function generateNewArray(size) {
             i--; 
             continue; 
         }
-        arrayDisplay.insertAdjacentHTML("beforeEnd", 
-            "<div id='arrEl" + value + "' class='arrayElement' value='" + value + "' style='height:" + height + "%; width:" + width + "%;'></div>");
+        arrayDisplay.insertAdjacentHTML('beforeEnd', 
+            '<div id="arrEl' + value + '" class="arrayElement" value="' + value + '" style="height:' + height + '%; width:' + width + '%";></div>');
     }
 }
 
 function deleteArray() {
-    var arrayElements = document.getElementsByClassName("arrayElement");
+    var arrayElements = document.getElementsByClassName('arrayElement');
 
     while(arrayElements[0]) {
         arrayElements[0].parentNode.removeChild(arrayElements[0]);
     }
 }
 
+function generateChildForAnimation(arrayElement) {
+    let element = document.createElement('div');
+    let elementId = document.createAttribute('id');
+    elementId.value = arrayElement.id + 'Inner';
+    let elementStyle = document.createAttribute('style');
+    elementStyle.value='box-sizing: border-box;';
+    let elementClass = document.createAttribute('class');
+    elementClass.value = 'swap';
+
+    element.setAttributeNode(elementId);
+    element.setAttributeNode(elementClass);
+    element.setAttributeNode(elementStyle);
+
+    arrayElement.appendChild(element);
+    return element; 
+
+}
+
+function swap(leftElement, rightElement) {
+    // generate inner divs for animation
+    let leftElementInner = generateChildForAnimation(leftElement);
+    let rightElementInner = generateChildForAnimation(rightElement);
+
+    // callbacks for end of transition
+    rightElementInner.addEventListener('webkitTransitionEnd', function(ev) {
+        swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, ev);
+    });
+    rightElementInner.addEventListener('transitionEnd', function(ev) {
+        swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, ev);
+    });
+    rightElementInner.addEventListener('msTransitionEnd', function(ev) {
+        swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, ev);
+    });
+    rightElementInner.addEventListener('oTransitionEnd', function(ev) {
+        swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, ev);
+    });
+    
+    let travelDistanceLeft = rightElement.getBoundingClientRect().left - leftElement.getBoundingClientRect().left  + 'px'; // for left element
+    let travelDistanceRight = leftElement.getBoundingClientRect().right - rightElement.getBoundingClientRect().right  + 'px';  // for right element
+
+    // make colors and borders same as background
+    leftElement.style.backgroundColor = '#393939'; // maybe don't hard code this
+    rightElement.style.backgroundColor = '#393939';
+    leftElement.style.borderWidth = '0'; // maybe don't hard code this
+    rightElement.style.borderWidth = '0';
+
+    // animate left element
+    leftElementInner.style.backgroundColor = 'pink';  // maybe don't hard code this
+    leftElementInner.style.height = leftElement.clientHeight + 'px';
+    leftElementInner.style.width = leftElement.clientWidth + 'px'; 
+    leftElementInner.style.position = 'absolute';
+    leftElementInner.style.border = 'solid 1px black'; 
+    window.setTimeout(function() { leftElementInner.style.marginLeft = travelDistanceLeft; }, 100);
+
+    // animate right element
+    rightElementInner.style.backgroundColor = 'pink'; // maybe don't hard code this
+    rightElementInner.style.height = rightElement.clientHeight  + 'px';
+    rightElementInner.style.width = rightElement.clientWidth  + 'px'; 
+    rightElementInner.style.position = 'absolute';
+    rightElementInner.style.border = 'solid 1px black';
+    window.setTimeout(function() { rightElementInner.style.marginLeft = travelDistanceRight; }, 100);
+    
+}
+
+function swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, ev) {
+        // TODO remove event listeners    
+        // reset the elements
+        leftElement.style.backgroundColor = '';
+        rightElement.style.backgroundColor = '';
+        leftElement.style.border = 'solid 1px black';
+        rightElement.style.border = 'solid 1px black';
+
+        // remove inner elements
+        leftElement.removeChild(leftElement.childNodes[0]);
+        rightElement.removeChild(rightElement.childNodes[0]);
+
+        // actually swap the elements
+        leftElement.parentElement.replaceChild(leftElement.cloneNode(), rightElement);
+        leftElement.parentElement.replaceChild(rightElement.cloneNode(), leftElement);
+
+        activateControlButtons(); 
+}
+function generateInvisibleChildForAnimation(arrayElement) {
+    let element = document.createElement('div');
+    let elementId = document.createAttribute('id');
+    elementId.value = arrayElement.id + 'Invisible';
+    let elementStyle = document.createAttribute('style');
+    elementStyle.value='position: absolute;';
+    let elementClass = document.createAttribute('class');
+    elementClass.value = 'invisibleSwap';
+    element.setAttributeNode(elementId);
+    element.setAttributeNode(elementClass);
+    element.setAttributeNode(elementStyle);
+    arrayElement.appendChild(element);
+    return element; 
+
+}
+function invisibleSwap(leftElement, rightElement) {
+    let invisibleElement = generateInvisibleChildForAnimation(rightElement);
+
+    // callbacks for end of transition
+    invisibleElement.addEventListener('webkitTransitionEnd', function(ev) {
+        invisibleSwapCallback(leftElement, rightElement, invisibleElement); 
+    });
+    invisibleElement.addEventListener('transitionEnd', function(ev) {
+        invisibleSwapCallback(leftElement, rightElement, invisibleElement); 
+    });
+    invisibleElement.addEventListener('msTransitionEnd', function(ev) {
+        invisibleSwapCallback(leftElement, rightElement, invisibleElement);  
+    });
+    invisibleElement.addEventListener('oTransitionEnd', function(ev) {
+        invisibleSwapCallback(leftElement, rightElement, invisibleElement); 
+    });
+    window.setTimeout(function() { invisibleElement.style.marginLeft = '250px'; }, 100);
+}
+
+function invisibleSwapCallback(leftElement, rightElement, invisibleElement) {
+    // TODO remove event listeners
+    invisibleElement.parentElement.removeChild(invisibleElement);
+    leftElement.classList.remove('swapColor');
+    rightElement.classList.remove('swapColor');
+    activateControlButtons();
+}
 
 /* --------------------------------- Helper --------------------------------- */
 function calcHeight(height) {
@@ -127,15 +265,15 @@ function calcHeight(height) {
 /* -------------------------------------------------------------------------- */
 
 function stepBack() {
+    let arrayElements = document.getElementsByClassName('arrayElement');
+
+    swap(arrayElements[0], arrayElements[4]);
     console.log("stepBack");
     return;
 }
 
 function sort() {
     console.log("sort");
-}
-
-function stepForward() {
     let array = getArray(); 
 
     if(isSorted(array)) {
@@ -144,8 +282,21 @@ function stepForward() {
         bottomTextDisplay.insertAdjacentHTML('beforeEnd',
         '<p id="line' + linenumber + '" class="bottomTextDisplayText">Array is sorted... Please reset to start sorting again.</p>');
     } else {
-        stepForwardBubbleSort(array);
-    }
+        bubbleSort.sort(array);
+    } 
+}
+
+function stepForward() {
+    let array = getArray(); 
+    
+    if(isSorted(array)) {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        let linenumber = bottomTextDisplay.childNodes.length; 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p id="line' + linenumber + '" class="bottomTextDisplayText">Array is sorted... Please reset to start sorting again.</p>');
+    } else {
+        bubbleSort.initNextStep(array);
+    } 
 }
 
 function getArray() {
@@ -155,32 +306,53 @@ function getArray() {
 
 function isSorted(array) {
     for(let i = 0; i < array.length-1; i++) {
-        if(array[i] > array[i+1]) return false; 
+        if (array[i] > array[i+1]) return false; 
     }
     return true; 
 }
-
-function insertBeforeElement(elementValue, anotherElementValue) {
-    let element = document.getElementById('arrEl' + elementValue);
-    let anotherElement = document.getElementById('arrEl' + anotherElementValue);
-    element.parentNode.insertBefore(anotherElement, element);
-    let clone1 = element.cloneNode();
-    let clone2 = anotherElement.cloneNode();
-    anotherElement.replaceWith(clone1);
-    element.replaceWith(clone2);
-
-}
-
-
-
 
 
 
 /* ------------------------------- Bubble Sort ------------------------------ */
 // TODO reset everything if array size changes
 
-var lastStepHolder; 
+let bubbleSort = {
+        lastIndex : undefined, 
+        initNextStep : function(array) {
+            if (bubbleSort.lastIndex == undefined) bubbleSort.lastIndex = -1; 
+            bubbleSort.nextStep(array, bubbleSort.lastIndex);
+        },
+        nextStep : function (array, lastIndex) {
+            lastIndex == array.length -2 ? lastIndex = 0 : lastIndex++;
 
+            if (array[lastIndex] > array[lastIndex+1]) {
+                bubbleSort.prepareAndExecuteAnimation(array[lastIndex], array[lastIndex+1]);
+                // print in console
+            } else {
+                bubbleSort.prepareAndFakeAnimation(array[lastIndex], array[lastIndex+1]);
+                // print in console
+            }
+            bubbleSort.lastIndex = lastIndex; 
+        },
+        prepareAndExecuteAnimation : function (valueLeft, valueRight) {
+            let left = document.getElementById('arrEl' + valueLeft);
+            let right = document.getElementById('arrEl' + valueRight);
+            
+            deactivateControlButtons(); 
+            swap(left, right); 
+        },
+        prepareAndFakeAnimation : function (valueLeft, valueRight) {
+            let left = document.getElementById('arrEl' + valueLeft);
+            let right = document.getElementById('arrEl' + valueRight);
+            
+            left.classList.add('swapColor');
+            right.classList.add('swapColor');
+            
+            deactivateControlButtons(); 
+            invisibleSwap(left, right); 
+        }
+}
+/* 
 class BubbleSortHolder {
     constructor(array, lastIndex, firstElement, secondElement, swap) {
         this.array = array; 
@@ -246,7 +418,7 @@ function nextStepBubbleSort(array, lastIndex) {
 
     return bubbleSortHolder;
 }
-
+*/
 
 /* -------------------------------------------------------------------------- */
 /*                                Text display                                */
