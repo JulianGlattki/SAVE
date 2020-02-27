@@ -328,7 +328,7 @@ p {
 .bottomTextDisplay {
     height: 70%;
     width: 100%; 
-    overflow: auto; 
+    overflow: scroll; 
     box-sizing: border-box; 
     padding: 0px;
     padding-bottom: 10px;
@@ -355,8 +355,7 @@ p {
     width: 100%; 
     border-style: solid; 
     border-width: 0; 
-
-    background-color: #212125; 
+    background-color: #393939; 
 }
 
 

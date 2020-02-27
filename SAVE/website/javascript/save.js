@@ -1,8 +1,19 @@
 'use strict';
 let globalStorage = {
-    fullSort : false, 
-    currAlgorithm : undefined
+    fullSort : false, // needed so that animation callbacks can initiate the next step
+    currAlgorithm : undefined, // needed so that animation callbacks can call correct algorithm
+    running : false, // needed so that the algorithm can stop when user presses stop
 }
+
+
+
+
+// TODO deactivate dropdown if sorting
+// TODO comments
+// TODO restructure when done with bubblesort
+// TODO scrollbar at bottom
+// TODO if algorithm changes reset last index ????
+// TODO different event on slider because it resets array twice
 /* -------------------------------------------------------------------------- */
 /*                                   General                                  */
 /* -------------------------------------------------------------------------- */
@@ -28,8 +39,8 @@ let init = {
         let algorithmDropdownOption = document.getElementsByClassName("algorithmDropdownOption");
     
         for(var i = 0; i < algorithmDropdownOption.length; i++) {
-            algorithmDropdownOption[i].addEventListener("click", (e) => {
-                algorithmPicked(e);
+            algorithmDropdownOption[i].addEventListener("click", function(e) {
+                dropdown.algorithmPicked(e);
             });
         }
     }, 
@@ -54,39 +65,103 @@ let dropdown = {
         document.getElementById("algorithmSelected").innerHTML = 
             document.getElementsByName(currentAlgorithm)[0].innerHTML; 
     
-        textUtils.changeAlgorithmTextDisplay();
+        textUtils.changeAlgorithm();
     }
 }
 /* --------------------------------- Buttons -------------------------------- */
 let buttons = {
     stepBack : function() {
-        let arrayElements = document.getElementsByClassName('arrayElement');
-
-        swap(arrayElements[0], arrayElements[4]);
+        let selectedAlgorithm = document.getElementById("algorithmSelected").innerHTML;
+        if (selectedAlgorithm === 'Bubblesort') {
+            globalStorage.currAlgorithm = bubbleSort;
+            bubbleSort.initBackStep(); 
+        }
         console.log("stepBack");
         return;
     }, 
     sort : function() {
-        console.log("sort");
-        bubbleSort.sort();
+        console.log('sort');
+        let selectedAlgorithm = document.getElementById("algorithmSelected").innerHTML;
+        globalStorage.running = true; 
+        globalStorage.fullSort = true;  
+        buttons.utils.switchToStopButton(); 
+        if (selectedAlgorithm === 'Bubblesort') {
+            globalStorage.currAlgorithm = bubbleSort;
+            bubbleSort.sort(); 
+        }
+
     },
     stepForward : function() {
-        bubbleSort.initNextStep();
+        console.log('stepForward');
+        let selectedAlgorithm = document.getElementById("algorithmSelected").innerHTML;
+        globalStorage.fullSort = false; 
+        if (selectedAlgorithm === 'Bubblesort') {
+            globalStorage.currAlgorithm = bubbleSort;
+            bubbleSort.initNextStep(); 
+        }
+    },
+    stopButtonClicked : function() {
+        buttons.utils.switchToSortButton(); 
+        buttons.utils.activateControlButtons(); 
+        textUtils.stopped(); 
+        globalStorage.running = false; 
     },
     utils : {
         deactivateControlButtons : function() {
-            let controlButtons = Array.from(document.getElementsByClassName('controlButton'));
+            let controlButtons = Array.from(document.getElementsByClassName('controlElement'));
         
             controlButtons.forEach(function(button) {
                 button.disabled = true; 
             });
         }, 
         activateControlButtons : function() {
-            let controlButtons = Array.from(document.getElementsByClassName('controlButton'));
+            let controlButtons = Array.from(document.getElementsByClassName('controlElement'));
         
             controlButtons.forEach(function(button) {
                 button.disabled = false; 
             });
+        }, 
+        switchToStopButton : function() {
+            
+            let sortButton = document.getElementById('sort');
+            let parentOfSortButton = sortButton.parentElement; 
+            parentOfSortButton.removeChild(sortButton);
+
+            let stopButton = document.createElement('button'); 
+            let stopButtonId = document.createAttribute('id');
+            stopButtonId.value = 'stop';
+            let stopButtonClass = document.createAttribute('class');
+            stopButtonClass.value = 'controlButton';
+            
+            stopButton.setAttributeNode(stopButtonId);
+            stopButton.setAttributeNode(stopButtonClass);
+
+            stopButton.innerHTML = 'Stop';
+            stopButton.addEventListener('click', buttons.stopButtonClicked);
+             
+            parentOfSortButton.appendChild(stopButton);
+            buttons.utils.deactivateControlButtons();
+        }, 
+        switchToSortButton : function() {
+            let stopButton = document.getElementById('stop');
+            let parentOfStopButton = stopButton.parentElement; 
+            parentOfStopButton.removeChild(stopButton);
+
+            let sortButton = document.createElement('button'); 
+            let sortButtonId = document.createAttribute('id');
+            sortButtonId.value = 'sort';
+            let sortButtonClass = document.createAttribute('class');
+            sortButtonClass.value = 'controlButton controlElement';
+            
+            sortButton.setAttributeNode(sortButtonId);
+            sortButton.setAttributeNode(sortButtonClass);
+
+            sortButton.innerHTML = 'Sort';
+            sortButton.addEventListener('click', buttons.sort);
+
+            parentOfStopButton.appendChild(sortButton);
+            buttons.utils.activateControlButtons();
+
         }
     }
 }
@@ -116,6 +191,7 @@ let arrayUtils = {
         }
         arrayUtils.deleteArray(); 
         arrayUtils.generateNewArray(arraySize);
+        generalUtils.resetForArraySizeChange(); 
     },
     generateNewArray : function(size) {
         var arrayDisplay = document.getElementById('arrayDisplay');
@@ -151,18 +227,61 @@ let arrayUtils = {
     }, 
     calcHeight : function(height) {
         return height * 0.0178 + 1; // Map height [1-5000] to [1-90]
+    }, 
+    isEqual(array, anotherArray) { // works if arrays do not contain objects
+        return JSON.stringify(array)==JSON.stringify(anotherArray);
     }
 }
 let textUtils = {
-    changeAlgorithmTextDisplay : function() {
+    changeAlgorithm : function() {
         var algorithm = document.getElementById("algorithmSelected").innerHTML;
-        var bottomTextDisplay = document.getElementById("bottomTextDisplay");
-    
-        var linenumber = bottomTextDisplay.childNodes.length; 
-    
+        var bottomTextDisplay = document.getElementById("bottomTextDisplay"); 
         bottomTextDisplay.insertAdjacentHTML("beforeEnd",
-        '<p id="line' + linenumber + '" class="bottomTextDisplayText">You picked ' + algorithm +  '. Ready to sort....</p>'
-        );
+        '<p class="bottomTextDisplayText">You picked ' + algorithm +  '. Ready to sort....</p>');
+    },
+    sorted : function() {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p class="bottomTextDisplayText">Array is sorted... Please reset to start sorting again.</p>');
+    }, 
+    swapTwoElements : function(valueOne, valueTwo, step) {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p id="' + globalStorage.currAlgorithm.name + '-' + step + '" class="bottomTextDisplayText" value="' + globalStorage.currAlgorithm.name + '-' + valueOne + '-'  + valueTwo + '-' + 'S">Swapping elements [' + valueOne + '] and [' + valueTwo + ']</p>');
+    }, 
+    notSwapTwoElements : function(valueOne, valueTwo, step) {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p id="' + globalStorage.currAlgorithm.name + '-' + step + '" class="bottomTextDisplayText" value="' + globalStorage.currAlgorithm.name + '-' + valueOne + '-'  + valueTwo + '-' + 'N">Checked elements [' + valueOne + '] and [' + valueTwo + ']. Not swapping...</p>');
+    }, 
+    reverseTwoElements : function(valueOne, valueTwo, step) {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        let lastStep = document.getElementById(bubbleSort.name + '-' + bubbleSort.steps);
+
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p class="bottomTextDisplayText">Reverting: { ' + lastStep.innerHTML  + '} </p>');
+
+        lastStep.id += 'REVERSED';
+    },
+    stopped : function() {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p class="bottomTextDisplayText">Stop button clicked. Stopped sorting...</p>');
+    }, 
+    originalState : function() {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        let linenumber = bottomTextDisplay.childNodes.length; 
+        bottomTextDisplay.insertAdjacentHTML('beforeEnd',
+        '<p class="bottomTextDisplayText">Array is in original state. Can\'t step back!</p>');
+    }, 
+    adjustScroll : function() {
+        let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
+        bottomTextDisplay.parentElement.scrollTop = bottomTextDisplay.parentElement.scrollHeight;
+    }
+}
+let generalUtils = {
+    resetForArraySizeChange : function() {
+        bubbleSort.lastIndex = undefined; 
     }
 }
 /* -------------------------------------------------------------------------- */
@@ -181,7 +300,7 @@ let animation = {
 
             // callbacks for end of transition
             animation.utils.setTransitionEndListeners(rightElementInner, function callback() {
-                animation.basicSwap.swapCallback(leftElement, rightElement, leftElementInner, rightElementInner);
+                animation.basicSwap.swapCallback(leftElement, rightElement);
             });
             
             // Calculate margins for animation
@@ -210,7 +329,7 @@ let animation = {
             rightElementInner.style.border = 'solid 1px black';
             window.setTimeout(function() { rightElementInner.style.marginLeft = travelDistanceRight; }, 100);
         }, 
-        swapCallback : function(leftElement, rightElement, leftElementInner, rightElementInner, fullSort, currAlgorithm) {
+        swapCallback : function(leftElement, rightElement) {
             // reset the elements
             leftElement.style.backgroundColor = '';
             rightElement.style.backgroundColor = '';
@@ -222,30 +341,34 @@ let animation = {
             rightElement.removeChild(rightElement.childNodes[0]);
 
             // actually swap the elements
-            leftElement.parentElement.replaceChild(leftElement.cloneNode(), rightElement, currAlgorithm);
-            leftElement.parentElement.replaceChild(rightElement.cloneNode(), leftElement, currAlgorithm);
+            leftElement.parentElement.replaceChild(leftElement.cloneNode(), rightElement);
+            leftElement.parentElement.replaceChild(rightElement.cloneNode(), leftElement);
 
             buttons.utils.activateControlButtons(); 
+            textUtils.adjustScroll(); // in callback because it considers new text
+            if (globalStorage.fullSort) globalStorage.currAlgorithm.sort();
 
-            if (fullSort) currAlgorithm.sort();
+            
         }
     },
     invisibleSwap : {
-        invisibleSwap : function(leftElement, rightElement, fullSort, currAlgorithm) {
+        invisibleSwap : function(leftElement, rightElement) {
             let invisibleElement =  animation.utils.generateInvisibleChildForAnimation(rightElement);
 
             animation.utils.setTransitionEndListeners(invisibleElement, function() {
-                animation.invisibleSwap.invisibleSwapCallback(leftElement, rightElement, invisibleElement, fullSort, currAlgorithm);
+                animation.invisibleSwap.invisibleSwapCallback(leftElement, rightElement, invisibleElement);
             }); 
             window.setTimeout(function() { invisibleElement.style.marginLeft = '250px'; }, 100);
         }, 
-        invisibleSwapCallback : function(leftElement, rightElement, invisibleElement, fullSort, currAlgorithm) {
+        invisibleSwapCallback : function(leftElement, rightElement, invisibleElement) {
             invisibleElement.parentElement.removeChild(invisibleElement);
             leftElement.classList.remove('swapColor');
             rightElement.classList.remove('swapColor');
             buttons.utils.activateControlButtons();
+            textUtils.adjustScroll(); // in callback because it considers new text
+            if (globalStorage.fullSort) globalStorage.currAlgorithm.sort();
 
-            if (fullSort) currAlgorithm.sort();
+            
         }
     },
     utils : {
@@ -287,18 +410,7 @@ let animation = {
             element.addEventListener('oTransitionEnd', callback);
         },
         removeTransitionEndListeners : function(element) {
-            element.removeEventListener('webkitTransitionEnd', function(ev) {
-                swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, fullSort, currAlgorithm, ev);
-            });
-            element.removeEventListener('transitionEnd', function(ev) {
-                swapCallback(leftElement, rightElement, leftElementInner, rightElementInner, fullSort, currAlgorithm, ev);
-            });
-            element.removeEventListener('msTransitionEnd', function(ev) {
-                return callback; 
-            });
-            element.removeEventListener('oTransitionEnd', function(ev) {
-                callback()
-            });
+
         }
     }
 }
@@ -310,51 +422,86 @@ let animation = {
 /*                             Sorting algorithms                             */
 /* -------------------------------------------------------------------------- */
 let bubbleSort = {
-        lastIndex : undefined, 
+        lastIndex : undefined,
+        steps : undefined,
+        name : 'Bubblesort',
         sort : function() {
             let array = arrayUtils.getArray(); 
-            if(arrayUtils.isSorted(array)) {
-                let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
-                let linenumber = bottomTextDisplay.childNodes.length; 
-                bottomTextDisplay.insertAdjacentHTML('beforeEnd',
-                '<p id="line' + linenumber + '" class="bottomTextDisplayText">Array is sorted... Please reset to start sorting again.</p>');
+            if (arrayUtils.isSorted(array)) {
+                globalStorage.running = false; 
+                globalStorage.fullSort = false; 
+                buttons.utils.switchToSortButton(); 
+                textUtils.sorted(); 
+            } else if (!globalStorage.running) {
+                globalStorage.fullSort = false; 
+                return; 
             } else {
-                this.initNextStep(array, true)
+                bubbleSort.initNextStep(array);  
             }
         },
-        initNextStep : function(array, fullSort) {
-            if (bubbleSort.lastIndex == undefined) bubbleSort.lastIndex = -1; 
+        initNextStep : function(array) {
             if (array == undefined) array = arrayUtils.getArray(); 
-            bubbleSort.nextStep(array, bubbleSort.lastIndex, fullSort);
+            if (arrayUtils.isSorted(array)) textUtils.sorted();
+            else {
+                if (bubbleSort.lastIndex == undefined) bubbleSort.lastIndex = -1; 
+                bubbleSort.steps == undefined ? bubbleSort.steps = 0 : bubbleSort.steps++;
+                bubbleSort.nextStep(array, bubbleSort.lastIndex);
+            } 
         },
-        nextStep : function (array, lastIndex, fullSort) {
+        nextStep : function (array, lastIndex) {
             lastIndex == array.length -2 ? lastIndex = 0 : lastIndex++;
 
-            if (array[lastIndex] > array[lastIndex+1]) {
-                bubbleSort.prepareAndExecuteAnimation(array[lastIndex], array[lastIndex+1], fullSort);
-                // print in console
-            } else {
-                bubbleSort.prepareAndFakeAnimation(array[lastIndex], array[lastIndex+1], fullSort);
-                // print in console
-            }
+            if (array[lastIndex] > array[lastIndex+1]) bubbleSort.prepareAndExecuteAnimation(array[lastIndex], array[lastIndex+1], false);
+            else bubbleSort.prepareAndFakeAnimation(array[lastIndex], array[lastIndex+1], false);
+            
             bubbleSort.lastIndex = lastIndex; 
         },
-        prepareAndExecuteAnimation : function (valueLeft, valueRight, fullSort) {
+        initBackStep : function() {
+            let array = arrayUtils.getArray();
+            // if there is no previous step
+            if (bubbleSort.steps == undefined) { 
+                textUtils.originalState();  
+            } else {
+                bubbleSort.backStep(array, bubbleSort.lastIndex); 
+                if (bubbleSort.steps === 0) bubbleSort.steps = undefined; 
+                else bubbleSort.steps--;
+            }
+        }, 
+        backStep : function(array, lastIndex) {
+            let lastStep = document.getElementById(bubbleSort.name + '-' + bubbleSort.steps);
+            let lastStepValues = lastStep.getAttribute('value').split('-');
+            
+            if(lastStepValues[3] === 'S') {
+                bubbleSort.prepareAndExecuteAnimation(lastStepValues[1], lastStepValues[2], true);
+            } else {
+                bubbleSort.prepareAndFakeAnimation(lastStepValues[1], lastStepValues[2], true);
+            }
+            lastIndex == 0 ? lastIndex = array.length - 2 : lastIndex--;
+
+            bubbleSort.lastIndex = lastIndex; 
+        },
+        prepareAndExecuteAnimation : function (valueLeft, valueRight, reverse) {
             let left = document.getElementById('arrEl' + valueLeft);
             let right = document.getElementById('arrEl' + valueRight);
             
+            if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, bubbleSort.steps);  
+            else textUtils.swapTwoElements(valueLeft, valueRight, bubbleSort.steps);
+
             buttons.utils.deactivateControlButtons(); 
-            animation.basicSwap.swap(left, right, fullSort, bubbleSort); 
+            animation.basicSwap.swap(left, right); 
         },
-        prepareAndFakeAnimation : function (valueLeft, valueRight, fullSort) {
+        prepareAndFakeAnimation : function (valueLeft, valueRight, reverse) {
             let left = document.getElementById('arrEl' + valueLeft);
             let right = document.getElementById('arrEl' + valueRight);
             
             left.classList.add('swapColor');
             right.classList.add('swapColor');
             
+            if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, bubbleSort.steps); 
+            else textUtils.notSwapTwoElements(valueLeft, valueRight, bubbleSort.steps);
+
             buttons.utils.deactivateControlButtons(); 
-            animation.invisibleSwap.invisibleSwap(left, right, fullSort, bubbleSort); 
+            animation.invisibleSwap.invisibleSwap(left, right); 
         }
 }
 /* -------------------------------------------------------------------------- */
