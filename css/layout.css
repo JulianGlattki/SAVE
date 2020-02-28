@@ -65,18 +65,36 @@ p {
 
     font-size: 0;
 }
-.algorithmPickerContent {
-    position: relative; 
-    top: 27.5%;
-    bottom: 27.5%;
-
-    height: 45%; 
-    width: 50%;
-    padding-left: 2.5%;
-    padding-right: 2.5%;
-    margin: 0 auto; 
-
+@media (min-width: 0px) {
+    .algorithmPickerContent {
+        position: relative; 
+        top: 27.5%;
+        bottom: 27.5%;
+    
+        height: 45%; 
+        width: 90%;
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+        margin: 0 auto; 
+    
+    }
 }
+
+@media (min-width: 768px) {
+    .algorithmPickerContent {
+        position: relative; 
+        top: 27.5%;
+        bottom: 27.5%;
+
+        height: 45%; 
+        width: 50%;
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+        margin: 0 auto; 
+
+    }
+}
+
 .algorithmDropdown{
     position: relative;
 
@@ -101,30 +119,54 @@ p {
     font-family: 'Glegoo', serif;
     text-align: center; 
 }
-
-.algorithmDropdownTriangleContainer {
-    position: relative;
-
-    display: inline-flex;
-    height: 100%; 
-    width: 20%;
-
-    align-content: center; 
-    justify-content: center;
-    flex-direction: column;
-
-    background-color: #212125; 
+@media (min-width: 0px) {
+    .algorithmDropdownTriangleContainer {
+        display: inline-flex;
+        height: 100%; 
+        width: 20%;
+        align-content: center; 
+        justify-content: center;
+        flex-direction: column;
+        background-color: #212125; 
+    }
 }
 
-.algorithmDropdownTriangle {
-    position: absolute;
-    right: 10%;
-    width: 0; 
-    height: 0; 
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-top: 15px solid #F3D516;
+@media (min-width: 768px) {
+    .algorithmDropdownTriangleContainer {
+        position: relative;
+        display: inline-flex;
+        height: 100%; 
+        width: 20%;
+        align-content: center; 
+        justify-content: center;
+        flex-direction: column;
+    
+        background-color: #212125; 
+    }
 }
+    
+@media (min-width: 0px) {
+    .algorithmDropdownTriangle {
+        width: 0; 
+        height: 0; 
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 15px solid #F3D516;
+    }
+}
+
+@media (min-width: 768px) {
+    .algorithmDropdownTriangle {
+        position: absolute;
+        right: 10%;
+        width: 0; 
+        height: 0; 
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 15px solid #F3D516;
+    }    
+}
+    
 
 .algorithmDropdownOptions {
     position: absolute; 
@@ -196,8 +238,6 @@ p {
     border-color: black; 
 
     background-color: #F3D516; 
-
-    
 }
 
 
@@ -210,23 +250,47 @@ p {
     background-color: #393939; 
 
 }
-
-.arrayOptionsContent {
-    position: relative; 
-    top: 10%; 
-    bottom: 10%; 
-
-    height: 80%; 
-    width: 97%; 
-    padding-left: 1%; 
-    padding-right: 1%; 
+@media (min-width: 0px) {
+    .arrayOptionsContent {
+        position: relative; 
+        top: 10%; 
+        bottom: 10%; 
+    
+        height: 80%; 
+        width: 97%; 
+        padding-left: 1%; 
+        padding-right: 1%; 
+    }
+}
+@media (min-width: 768px) {
+    .arrayOptionsContent {
+        position: relative; 
+        top: 10%; 
+        bottom: 10%; 
+    
+        height: 80%; 
+        width: 97%; 
+        padding-left: 1%; 
+        padding-right: 1%; 
+    }
 }
 /* -------------------------------------------------------------------------- */
-.arraySizeSliderContainer {
-    display: inline-block; 
-    height: 100%; 
-    width: 85%; 
+@media (min-width: 0px) {
+    .arraySizeSliderContainer {
+        display: inline-block; 
+        height: 100%; 
+        width: 75%; 
+    }
 }
+@media (min-width: 768px) {
+    .arraySizeSliderContainer {
+        display: inline-block; 
+        height: 100%; 
+        width: 85%; 
+    }
+}
+    
+
 
 .arraySizeSlider {
     position: relative; 
@@ -266,14 +330,26 @@ p {
     cursor: pointer; 
   }
 /* -------------------------------------------------------------------------- */
-.arraySizeInputContainer {
-    display: inline-block;
-    height: 100%;
-    width: 12%;   
-    padding-left: 1%;
-    padding-right: 1%;
+@media (min-width: 0px) {
+    .arraySizeInputContainer {
+        display: inline-block;
+        height: 100%;
+        width: 20%;   
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+    }
 }
-
+@media (min-width: 768px) {
+    .arraySizeInputContainer {
+        display: inline-block;
+        height: 100%;
+        width: 12%;   
+        padding-left: 1%;
+        padding-right: 1%;
+    }
+    
+}
+    
 .arraySizeInput {
     position: relative; 
     top: 25%; 
@@ -328,7 +404,7 @@ p {
 .bottomTextDisplay {
     height: 70%;
     width: 100%; 
-    overflow: scroll; 
+    overflow-y: scroll; 
     box-sizing: border-box; 
     padding: 0px;
     padding-bottom: 10px;
@@ -337,19 +413,31 @@ p {
 
     background-color: #393939;
 }
-
-.bottomTextDisplayInnerContainer {
-    height: 100%; 
-    width: 90%; 
-    padding: 0.5%; 
-
-    color: #F3D516; 
-
-    font-size: 1rem; 
-    font-family: 'Glegoo', serif;
-
+@media (min-width: 0px) {
+    .bottomTextDisplayInnerContainer {
+        height: 100%; 
+        width: 90%; 
+        padding: 2%; 
+    
+        color: #F3D516; 
+    
+        font-size: 1rem; 
+        font-family: 'Glegoo', serif;
+    }
 }
-
+@media (min-width: 768px) {
+    .bottomTextDisplayInnerContainer {
+        height: 100%; 
+        width: 90%; 
+        padding: 0.5%; 
+    
+        color: #F3D516; 
+    
+        font-size: 1rem; 
+        font-family: 'Glegoo', serif;
+    }
+}
+    
 .bottomButtons {
     height: 30%; 
     width: 100%; 
@@ -363,7 +451,6 @@ p {
     display: inline-block; 
     height: 100%; 
     width: 32%;
-
 }
 
 .buttonContainerInner {
@@ -392,7 +479,6 @@ p {
 .controlButton:focus {
     outline: none; 
 }
-
 /* -------------------------------------------------------------------------- */
 /*                                   Others                                   */
 /* -------------------------------------------------------------------------- */
