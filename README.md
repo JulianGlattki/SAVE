@@ -1,4 +1,4 @@
-#SAVE - Sorting Algorithm Visualization Enginge
+# SAVE - Sorting Algorithm Visualization Enginge
 A sorting algorithm visualizer implemented in native JavaScript. 
 Allows the user to step forward, step back and sort the full array. 
 Implemented algorithms: BubbleSort
