@@ -58,13 +58,14 @@ let dropdown = {
         var currentAlgorithm; 
     
         if (typeof e === 'string') currentAlgorithm = e; 
-        else currentAlgorithm = e.target.getAttribute("name");
+        else currentAlgorithm = e.target.getAttribute('name');
     
-        document.getElementsByName(previousAlgorithm)[0].style.display = "block"; 
-        document.getElementsByName(currentAlgorithm)[0].style.display = "none";
-        document.getElementById("algorithmSelected").innerHTML = 
-            document.getElementsByName(currentAlgorithm)[0].innerHTML; 
-    
+        document.getElementsByName(previousAlgorithm)[0].style.display = 'block'; 
+        document.getElementsByName(currentAlgorithm)[0].style.display = 'none';
+        document.getElementById('algorithmSelected').innerHTML = document.getElementsByName(currentAlgorithm)[0].innerHTML; 
+        
+        var visisbleDropdownOptions = Array.from(document.getElementsByClassName('algorithmDropdownOptions'));
+
         textUtils.changeAlgorithm();
     }
 }
@@ -75,12 +76,13 @@ let buttons = {
         if (selectedAlgorithm === 'Bubblesort') {
             globalStorage.currAlgorithm = bubbleSort;
             bubbleSort.initBackStep(); 
+        } else if (selectedAlgorithm === 'Shakersort') {
+            globalStorage.currAlgorithm = shakerSort;
+            shakerSort.initBackStep(); 
         }
-        console.log("stepBack");
         return;
     }, 
     sort : function() {
-        console.log('sort');
         let selectedAlgorithm = document.getElementById("algorithmSelected").innerHTML;
         globalStorage.running = true; 
         globalStorage.fullSort = true;  
@@ -88,16 +90,21 @@ let buttons = {
         if (selectedAlgorithm === 'Bubblesort') {
             globalStorage.currAlgorithm = bubbleSort;
             bubbleSort.sort(); 
+        } else if (selectedAlgorithm === 'Shakersort') {
+            globalStorage.currAlgorithm = shakerSort;
+            shakerSort.sort(); 
         }
 
     },
     stepForward : function() {
-        console.log('stepForward');
         let selectedAlgorithm = document.getElementById("algorithmSelected").innerHTML;
         globalStorage.fullSort = false; 
         if (selectedAlgorithm === 'Bubblesort') {
             globalStorage.currAlgorithm = bubbleSort;
             bubbleSort.initNextStep(); 
+        } else if (selectedAlgorithm === 'Shakersort') {
+            globalStorage.currAlgorithm = shakerSort;
+            shakerSort.initNextStep(); 
         }
     },
     stopButtonClicked : function() {
@@ -256,7 +263,7 @@ let textUtils = {
     }, 
     reverseTwoElements : function(valueOne, valueTwo, step) {
         let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
-        let lastStep = document.getElementById(bubbleSort.name + '-' + bubbleSort.steps);
+        let lastStep = document.getElementById(globalStorage.currAlgorithm.name + '-' + globalStorage.currAlgorithm.steps);
 
         bottomTextDisplay.insertAdjacentHTML('beforeEnd',
         '<p class="bottomTextDisplayText">Reverting: { ' + lastStep.innerHTML  + '} </p>');
@@ -282,6 +289,10 @@ let textUtils = {
 let generalUtils = {
     resetForArraySizeChange : function() {
         bubbleSort.lastIndex = undefined; 
+        shakerSort.lastIndex = undefined; 
+        shakerSort.forward = undefined; 
+        shakerSort.beginIndex = undefined; 
+        shakerSort.endIndex = undefined; 
     }
 }
 /* -------------------------------------------------------------------------- */
@@ -432,7 +443,7 @@ let bubbleSort = {
                 globalStorage.fullSort = false; 
                 buttons.utils.switchToSortButton(); 
                 textUtils.sorted(); 
-            } else if (!globalStorage.running) {
+            } else if (!globalStorage.running) {  // if stop button is clicked while running
                 globalStorage.fullSort = false; 
                 return; 
             } else {
@@ -440,14 +451,17 @@ let bubbleSort = {
             }
         },
         initNextStep : function(array) {
-            if (array == undefined) array = arrayUtils.getArray(); 
-            if (arrayUtils.isSorted(array)) textUtils.sorted();
-            else {
-                if (bubbleSort.lastIndex == undefined) bubbleSort.lastIndex = -1; 
-                bubbleSort.steps == undefined ? bubbleSort.steps = 0 : bubbleSort.steps++;
-                bubbleSort.nextStep(array, bubbleSort.lastIndex);
-            } 
-        },
+            if (array == undefined) {
+                array = arrayUtils.getArray(); 
+            }
+            if (arrayUtils.isSorted(array)) {
+                textUtils.sorted();
+                return; 
+            }
+            if (bubbleSort.lastIndex == undefined) bubbleSort.lastIndex = -1; 
+            bubbleSort.steps == undefined ? bubbleSort.steps = 0 : bubbleSort.steps++;
+            bubbleSort.nextStep(array, bubbleSort.lastIndex);
+        }, 
         nextStep : function (array, lastIndex) {
             lastIndex == array.length -2 ? lastIndex = 0 : lastIndex++;
 
@@ -503,6 +517,139 @@ let bubbleSort = {
             buttons.utils.deactivateControlButtons(); 
             animation.invisibleSwap.invisibleSwap(left, right); 
         }
+}
+
+let shakerSort = {
+    lastIndex : undefined, 
+    beginIndex : undefined,
+    endIndex : undefined, 
+    steps : undefined, 
+    forward : undefined, 
+    name : 'Shakersort',
+
+    sort : function() {
+        let array = arrayUtils.getArray(); 
+        if (arrayUtils.isSorted(array)) {
+            globalStorage.running = false; 
+            globalStorage.fullSort = false;
+            buttons.utils.switchToSortButton(); 
+            textUtils.sorted(); 
+        } else if (!globalStorage.running) { // if stop button is clicked while running
+            globalStorage.fullSort = false; 
+        } else {
+            shakerSort.initNextStep(array);
+        }
+    }, 
+    initNextStep : function(array) {
+        if (array == undefined) {
+            array = arrayUtils.getArray(); 
+        }
+        if (arrayUtils.isSorted(array)) {
+            textUtils.sorted();
+            return; 
+        }
+        if (shakerSort.lastIndex == undefined) shakerSort.lastIndex = 0; 
+        if (shakerSort.beginIndex == undefined) shakerSort.beginIndex = 0; 
+        if (shakerSort.endIndex == undefined) shakerSort.endIndex = array.length -1; 
+        if (shakerSort.forward == undefined) shakerSort.forward = true; 
+        shakerSort.steps == undefined ? shakerSort.steps = 0 : shakerSort.steps++;
+        shakerSort.nextStep(array, shakerSort.lastIndex);
+    }, 
+    nextStep : function(array, lastIndex) {
+        if (shakerSort.forward) {
+            if (lastIndex < shakerSort.endIndex) {
+                if (array[lastIndex] > array[lastIndex+1]) {
+                    shakerSort.prepareAndExecuteAnimation(array[lastIndex], array[lastIndex+1], false); 
+                } else {
+                    shakerSort.prepareAndFakeAnimation(array[lastIndex], array[lastIndex+1], false); 
+                }
+                if (lastIndex + 1 == shakerSort.endIndex) {
+                    shakerSort.forward = false; 
+                    shakerSort.endIndex = lastIndex; 
+                } else {
+                    lastIndex++; 
+                }
+            } 
+        } else {
+            if (lastIndex > shakerSort.beginIndex) {
+                if (array[lastIndex - 1] > array[lastIndex]) {
+                    shakerSort.prepareAndExecuteAnimation(array[lastIndex], array[lastIndex-1], false); 
+                } else {
+                    shakerSort.prepareAndFakeAnimation(array[lastIndex], array[lastIndex-1], false);
+                }
+                if (lastIndex -1 == shakerSort.beginIndex) {
+                    shakerSort.forward = true; 
+                    shakerSort.beginIndex = lastIndex; 
+                } else {
+                    lastIndex--;
+                }
+            }
+        }
+        shakerSort.lastIndex = lastIndex; 
+  
+    },
+    prepareAndExecuteAnimation : function (valueLeft, valueRight, reverse) {
+        let left = document.getElementById('arrEl' + valueLeft);
+        let right = document.getElementById('arrEl' + valueRight);
+        
+        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, shakerSort.steps);  
+        else textUtils.swapTwoElements(valueLeft, valueRight, shakerSort.steps);
+
+        buttons.utils.deactivateControlButtons(); 
+        animation.basicSwap.swap(left, right); 
+    },
+    prepareAndFakeAnimation : function (valueLeft, valueRight, reverse) {
+        let left = document.getElementById('arrEl' + valueLeft);
+        let right = document.getElementById('arrEl' + valueRight);
+        
+        left.classList.add('swapColor');
+        right.classList.add('swapColor');
+        
+        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, shakerSort.steps); 
+        else textUtils.notSwapTwoElements(valueLeft, valueRight, shakerSort.steps);
+
+        buttons.utils.deactivateControlButtons(); 
+        animation.invisibleSwap.invisibleSwap(left, right); 
+    },
+    initBackStep : function() {
+        let array = arrayUtils.getArray();
+        // if there is no previous step
+        if (shakerSort.steps == undefined) { 
+            textUtils.originalState();  
+        } else {
+            shakerSort.backStep(array, shakerSort.lastIndex); 
+            if (shakerSort.steps === 0) shakerSort.steps = undefined; 
+            else shakerSort.steps--;
+        }
+    }, 
+    backStep: function(array, lastIndex) {
+        let lastStep = document.getElementById(shakerSort.name + '-' + shakerSort.steps);
+        let lastStepValues = lastStep.getAttribute('value').split('-');
+        
+        if (shakerSort.forward) {
+            if (lastIndex == shakerSort.beginIndex) {
+                shakerSort.forward = false; 
+                shakerSort.beginIndex = lastIndex - 1; 
+            } else {
+                lastIndex--;
+            }
+        } else {
+            if (lastIndex == shakerSort.endIndex) {
+                shakerSort.forward = true; 
+                shakerSort.endIndex = lastIndex + 1; 
+            } else {
+                lastIndex++; 
+            }
+        }
+         
+        if (lastStepValues[3] === 'S') {
+            shakerSort.prepareAndExecuteAnimation(lastStepValues[1], lastStepValues[2], true);
+        } else {
+            shakerSort.prepareAndFakeAnimation(lastStepValues[1], lastStepValues[2], true);
+        }
+        
+        shakerSort.lastIndex = lastIndex; 
+    }
 }
 /* -------------------------------------------------------------------------- */
 /* ----------------------------------- END ---------------------------------- */
