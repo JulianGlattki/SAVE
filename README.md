@@ -1,7 +1,11 @@
 # SAVE - Sorting Algorithm Visualization Engine
 A sorting algorithm visualizer implemented in native JavaScript. 
-Allows the user to step forward, step back and sort the full array. 
-Implemented algorithms: Bubblesort, Shakersort
+Allows the user to step forward, step back and sort the full array.
+ 
+# Implemented algorithms
+Bubblesort
+Shakersort
+Gnomesort
 
 ## To see the actual project please go to 
 https://julianglattki.github.io/SAVE/

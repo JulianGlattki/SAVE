@@ -10,9 +10,8 @@ let globalStorage = {
 
 // TODO deactivate dropdown if sorting
 // TODO comments
-// TODO restructure when done with bubblesort
-// TODO scrollbar at bottom
-// TODO if algorithm changes reset last index ????
+// TODO restructure 
+// TODO scrollbar (needs to be) at bottom always
 // TODO different event on slider because it resets array twice
 /* -------------------------------------------------------------------------- */
 /*                                   General                                  */
@@ -47,6 +46,7 @@ let init = {
     initAlgorithmDropdown : function() {
         var initAlgorithm = document.getElementsByClassName("algorithmDropdownOption")[0].attributes.getNamedItem("name").value;
         dropdown.algorithmPicked(initAlgorithm);
+        generalUtils.resetForArraySizeChange(); 
     }
 }
 
@@ -65,7 +65,7 @@ let dropdown = {
         document.getElementById('algorithmSelected').innerHTML = document.getElementsByName(currentAlgorithm)[0].innerHTML; 
         
         var visisbleDropdownOptions = Array.from(document.getElementsByClassName('algorithmDropdownOptions'));
-
+        generalUtils.resetForArraySizeChange(); 
         textUtils.changeAlgorithm();
     }
 }
@@ -79,6 +79,9 @@ let buttons = {
         } else if (selectedAlgorithm === 'Shakersort') {
             globalStorage.currAlgorithm = shakerSort;
             shakerSort.initBackStep(); 
+        } else if (selectedAlgorithm === 'Gnomesort') {
+            globalStorage.currAlgorithm = gnomeSort;
+            gnomeSort.initBackStep(); 
         }
         return;
     }, 
@@ -93,6 +96,9 @@ let buttons = {
         } else if (selectedAlgorithm === 'Shakersort') {
             globalStorage.currAlgorithm = shakerSort;
             shakerSort.sort(); 
+        } else if (selectedAlgorithm === 'Gnomesort') {
+            globalStorage.currAlgorithm = gnomeSort;
+            gnomeSort.sort(); 
         }
 
     },
@@ -105,6 +111,9 @@ let buttons = {
         } else if (selectedAlgorithm === 'Shakersort') {
             globalStorage.currAlgorithm = shakerSort;
             shakerSort.initNextStep(); 
+        } else if (selectedAlgorithm === 'Gnomesort') {
+            globalStorage.currAlgorithm = gnomeSort;
+            gnomeSort.initNextStep(); 
         }
     },
     stopButtonClicked : function() {
@@ -254,12 +263,12 @@ let textUtils = {
     swapTwoElements : function(valueOne, valueTwo, step) {
         let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
         bottomTextDisplay.insertAdjacentHTML('beforeEnd',
-        '<p id="' + globalStorage.currAlgorithm.name + '-' + step + '" class="bottomTextDisplayText" value="' + globalStorage.currAlgorithm.name + '-' + valueOne + '-'  + valueTwo + '-' + 'S">Swapping elements [' + valueOne + '] and [' + valueTwo + ']</p>');
+        '<p id="' + globalStorage.currAlgorithm.name + '-' + step + '" class="bottomTextDisplayText previousStep" value="' + globalStorage.currAlgorithm.name + '-' + valueOne + '-'  + valueTwo + '-' + 'S">Swapping elements [' + valueOne + '] and [' + valueTwo + ']</p>');
     }, 
     notSwapTwoElements : function(valueOne, valueTwo, step) {
         let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
         bottomTextDisplay.insertAdjacentHTML('beforeEnd',
-        '<p id="' + globalStorage.currAlgorithm.name + '-' + step + '" class="bottomTextDisplayText" value="' + globalStorage.currAlgorithm.name + '-' + valueOne + '-'  + valueTwo + '-' + 'N">Checked elements [' + valueOne + '] and [' + valueTwo + ']. Not swapping...</p>');
+        '<p id="' + globalStorage.currAlgorithm.name + '-' + step + '" class="bottomTextDisplayText previousStep" value="' + globalStorage.currAlgorithm.name + '-' + valueOne + '-'  + valueTwo + '-' + 'N">Checked elements [' + valueOne + '] and [' + valueTwo + ']. Not swapping...</p>');
     }, 
     reverseTwoElements : function(valueOne, valueTwo, step) {
         let bottomTextDisplay = document.getElementById('bottomTextDisplay'); 
@@ -289,10 +298,24 @@ let textUtils = {
 let generalUtils = {
     resetForArraySizeChange : function() {
         bubbleSort.lastIndex = undefined; 
+        bubbleSort.steps = undefined; 
         shakerSort.lastIndex = undefined; 
         shakerSort.forward = undefined; 
         shakerSort.beginIndex = undefined; 
         shakerSort.endIndex = undefined; 
+        shakerSort.steps = undefined; 
+        gnomeSort.index = undefined; 
+        gnomeSort.steps = undefined; 
+
+        generalUtils.markPreviousStepsAsInvalid();
+    }, 
+    markPreviousStepsAsInvalid : function() {
+        let previousSteps = document.getElementsByClassName('previousStep'); 
+
+        for (let i = 0; i < previousSteps.length; i++) {
+            previousSteps[i].setAttribute('id', previousSteps[i].id + 'arraySizeChanged');
+            previousSteps[i].classList.remove('previousStep');
+        }
     }
 }
 /* -------------------------------------------------------------------------- */
@@ -588,29 +611,6 @@ let shakerSort = {
         shakerSort.lastIndex = lastIndex; 
   
     },
-    prepareAndExecuteAnimation : function (valueLeft, valueRight, reverse) {
-        let left = document.getElementById('arrEl' + valueLeft);
-        let right = document.getElementById('arrEl' + valueRight);
-        
-        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, shakerSort.steps);  
-        else textUtils.swapTwoElements(valueLeft, valueRight, shakerSort.steps);
-
-        buttons.utils.deactivateControlButtons(); 
-        animation.basicSwap.swap(left, right); 
-    },
-    prepareAndFakeAnimation : function (valueLeft, valueRight, reverse) {
-        let left = document.getElementById('arrEl' + valueLeft);
-        let right = document.getElementById('arrEl' + valueRight);
-        
-        left.classList.add('swapColor');
-        right.classList.add('swapColor');
-        
-        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, shakerSort.steps); 
-        else textUtils.notSwapTwoElements(valueLeft, valueRight, shakerSort.steps);
-
-        buttons.utils.deactivateControlButtons(); 
-        animation.invisibleSwap.invisibleSwap(left, right); 
-    },
     initBackStep : function() {
         let array = arrayUtils.getArray();
         // if there is no previous step
@@ -649,7 +649,121 @@ let shakerSort = {
         }
         
         shakerSort.lastIndex = lastIndex; 
+    },
+    prepareAndExecuteAnimation : function (valueLeft, valueRight, reverse) {
+        let left = document.getElementById('arrEl' + valueLeft);
+        let right = document.getElementById('arrEl' + valueRight);
+        
+        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, shakerSort.steps);  
+        else textUtils.swapTwoElements(valueLeft, valueRight, shakerSort.steps);
+
+        buttons.utils.deactivateControlButtons(); 
+        animation.basicSwap.swap(left, right); 
+    },
+    prepareAndFakeAnimation : function (valueLeft, valueRight, reverse) {
+        let left = document.getElementById('arrEl' + valueLeft);
+        let right = document.getElementById('arrEl' + valueRight);
+        
+        left.classList.add('swapColor');
+        right.classList.add('swapColor');
+        
+        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, shakerSort.steps); 
+        else textUtils.notSwapTwoElements(valueLeft, valueRight, shakerSort.steps);
+
+        buttons.utils.deactivateControlButtons(); 
+        animation.invisibleSwap.invisibleSwap(left, right); 
     }
+}
+
+let gnomeSort = {
+    index : undefined, 
+    steps : undefined,
+    name : 'Gnomesort',
+    sort : function() {
+        let array = arrayUtils.getArray(); 
+        if (arrayUtils.isSorted(array)) {
+            globalStorage.running = false; 
+            globalStorage.fullSort = false;
+            buttons.utils.switchToSortButton(); 
+            textUtils.sorted(); 
+        } else if (!globalStorage.running) { // if stop button is clicked while running
+            globalStorage.fullSort = false; 
+        } else {
+            gnomeSort.initNextStep(array);
+        }
+    },
+    initNextStep : function(array) {
+        if (array == undefined) {
+            array = arrayUtils.getArray(); 
+        }
+        if (arrayUtils.isSorted(array)) {
+            textUtils.sorted();
+            return; 
+        }
+        if (gnomeSort.index == undefined) gnomeSort.index = 0; 
+        gnomeSort.steps == undefined ? gnomeSort.steps = 0 : gnomeSort.steps++;
+        gnomeSort.nextStep(array, gnomeSort.index);
+    },
+    nextStep : function(array, index) {
+        if (array[index] < array[index+1]) {
+            gnomeSort.prepareAndFakeAnimation(array[index], array[index+1], false);
+            index++; 
+        } else if (array[index] > array[index+1]) {
+            gnomeSort.prepareAndExecuteAnimation(array[index], array[index+1], false); 
+            if (index != 0) index--; 
+            //else index++;
+        }
+
+        gnomeSort.index = index; 
+    },
+    initBackStep : function() {
+        let array = arrayUtils.getArray();
+        // if there is no previous step
+        if (gnomeSort.steps == undefined) { 
+            textUtils.originalState();  
+        } else {
+            gnomeSort.backStep(array, gnomeSort.lastIndex); 
+            if (gnomeSort.steps === 0) gnomeSort.steps = undefined; 
+            else gnomeSort.steps--;
+        }
+    }, 
+    backStep : function() {
+        let lastStep = document.getElementById(gnomeSort.name + '-' + gnomeSort.steps);
+        let lastStepValues = lastStep.getAttribute('value').split('-');
+
+        if (lastStepValues[3] === 'S') {
+            shakerSort.prepareAndExecuteAnimation(lastStepValues[1], lastStepValues[2], true);
+            gnomeSort.index++;
+        } else {
+            shakerSort.prepareAndFakeAnimation(lastStepValues[1], lastStepValues[2], true);
+            gnomeSort.index--;
+        }
+    }, 
+    prepareAndExecuteAnimation : function (valueLeft, valueRight, reverse) {
+        let left = document.getElementById('arrEl' + valueLeft);
+        let right = document.getElementById('arrEl' + valueRight);
+        
+        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, gnomeSort.steps);  
+        else textUtils.swapTwoElements(valueLeft, valueRight, gnomeSort.steps);
+
+        buttons.utils.deactivateControlButtons(); 
+        animation.basicSwap.swap(left, right); 
+    },
+    prepareAndFakeAnimation : function (valueLeft, valueRight, reverse) {
+        let left = document.getElementById('arrEl' + valueLeft);
+        let right = document.getElementById('arrEl' + valueRight);
+        
+        left.classList.add('swapColor');
+        right.classList.add('swapColor');
+        
+        if (reverse) textUtils.reverseTwoElements(valueLeft, valueRight, gnomeSort.steps); 
+        else textUtils.notSwapTwoElements(valueLeft, valueRight, gnomeSort.steps);
+
+        buttons.utils.deactivateControlButtons(); 
+        animation.invisibleSwap.invisibleSwap(left, right); 
+    },
+
+
 }
 /* -------------------------------------------------------------------------- */
 /* ----------------------------------- END ---------------------------------- */
